@@ -13,6 +13,8 @@ Project is going to be done by a team of 3 people. Throughout the project we are
 - [Karolina Dunal](https://github.com/xxkaro)
 
 ### First part of the project - Exploratory Data Analysis
+- The dataset is going to be divided into 4 parts: credit_score_train, credit_score_test, credit_score_valid, credit_score_validators.
+- One part is only available for the Validators team.
 - Each team member takes dataset and performs EDA on it separately.
 - The results are then compared and discussed in the team.
 - The final version of the EDA is going to be put in "EDA/final" folder.
