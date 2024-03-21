@@ -22,7 +22,24 @@ Project is going to be done by a team of 3 people. Throughout the project we are
 - Project team is going to think of feedback from the validators and improve the final version of the EDA.
 - Whole process can be repeated or changed if needed.
 
-### Second part of the project - Model creation
+### Second part of the project - Feature engineering and First models
+- After EDA we know that there are no missing values in the dataset.
+- We are going to ordinally encode "CAT_GAMBLING" column.
+- We try to deal with outliers in two ways:
+    - We are going to manually remove some of the outliers.
+    - We are going to compare it with PYOD library functions.
+- We are going to transform continuous variables using Box-Cox transformation and StandardScaler.
+- We might try to use for instance PCA to reduce the number of features.
+- We are going to compare the results of the models using different methods of dealing with outliers and different methods of feature engineering.
+- We are going to use MANY different models to compare them.
+- We will look at hiperparameters and try to optimize them.
+- We are going to use cross-validation to compare the models.
+- We are going to use different metrics to compare the models.
+- Validators will check the results in feature_engineering/final.ipynb file.
+- Project team is going to think of feedback from the validators and improve the final version of the feature engineering and first models.
+
+
+### Third part of the project - Model creation
 - to be added
 
 ### Note for every contributor:
