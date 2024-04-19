@@ -10,17 +10,28 @@ from sklearn.model_selection import StratifiedKFold
 
 
 def map_gambling(df):
+    """
+    This function maps the 'CAT_GAMBLING' column in the dataframe from string values to integer values.
+    'No' is mapped to 0, 'Low' is mapped to 1, and 'High' is mapped to 2.
+    """
     df['CAT_GAMBLING'] = df['CAT_GAMBLING'].map({'No': 0, 'Low': 1, 'High': 2})
     return df
 
 
 def split_x_from_y(df, target='DEFAULT'):
+    """
+    This function splits the dataframe into features (X) and target (y) based on the target column name provided.
+    """
     X = df.drop(columns=[target])
     y = df[target]
     return X, y
 
 
 def get_my_metrics(model, X_train, X_val, y_train, y_val):
+    """
+    This function fits the model with the training data and makes predictions on the validation data.
+    It then calculates and returns the accuracy, precision, recall, and f1 score of the model.
+    """
     model.fit(X_train, y_train)
     y_pred = model.predict(X_val)
 
@@ -33,8 +44,9 @@ def get_my_metrics(model, X_train, X_val, y_train, y_val):
 
 
 def cox_box_transform(X_train, X_val):
-    # transform data
-    # scaler = StandardScaler()
+    """
+    This function applies the Yeo-Johnson power transformation to the training and validation data.
+    """
     cox_box_model = PowerTransformer(method='yeo-johnson')
     X_train_transformed = cox_box_model.fit_transform(X_train)
     X_val_transformed = cox_box_model.transform(X_val)
@@ -46,6 +58,9 @@ def cox_box_transform(X_train, X_val):
 
 
 def create_tally(X_train, X_val, y_train, y_val, models, names):
+    """
+    This function performs cross-validation on multiple models and returns a dataframe with the mean and standard deviation of accuracy, precision, recall, and f1 score for each model.
+    """
     X = pd.concat([X_train, X_val])
     y = pd.concat([y_train, y_val])
     # if CAT_GAMBLING column has strings, map them to integers
@@ -90,6 +105,10 @@ def create_tally(X_train, X_val, y_train, y_val, models, names):
 
 
 def validate(X_train, X_test, y_train, y_test, models, names):
+    """
+    This function fits each model with the training data, makes predictions on the test data, and calculates the accuracy, precision, recall, and f1 score.
+    It returns a dataframe with these metrics for each model.
+    """
     score = pd.DataFrame(columns=['names', 'accuracy', 'precision', 'recall', 'f1'])
     if X_train['CAT_GAMBLING'].dtype == 'object':
         X_train = map_gambling(X_train)
@@ -104,12 +123,18 @@ def validate(X_train, X_test, y_train, y_test, models, names):
 
 
 def prepair_score(score):
+    """
+    This function reshapes the score dataframe from wide format to long format for visualization.
+    """
     score = pd.melt(score, id_vars=['model'], value_vars=['accuracy', 'precision', 'recall', 'f1'])
     return score
 
 
-def create_visualization(s):
-    s = prepair_score(s)
+def create_visualization(score):
+    """
+    This function creates a bar plot of the model performance metrics.
+    """
+    s = prepair_score(score)
     sns.set(rc={'figure.figsize': (10, 5)})
     sns.barplot(x='model', y='value', hue='variable', data=s)
     plt.title('Model Performance')
