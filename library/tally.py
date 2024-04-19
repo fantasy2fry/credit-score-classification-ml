@@ -88,15 +88,32 @@ def create_tally(X_train, X_val, y_train, y_val, models, names):
 
     return stats
 
-def validate(X_train,X_test, y_train, y_test, models,names):
+
+def validate(X_train, X_test, y_train, y_test, models, names):
     score = pd.DataFrame(columns=['names', 'accuracy', 'precision', 'recall', 'f1'])
     if X_train['CAT_GAMBLING'].dtype == 'object':
         X_train = map_gambling(X_train)
     if X_test['CAT_GAMBLING'].dtype == 'object':
         X_test = map_gambling(X_test)
-    X_train,X_test=cox_box_transform(X_train, X_test)
+    X_train, X_test = cox_box_transform(X_train, X_test)
     for m, n in zip(models, names):
         ac, pr, re, f1 = get_my_metrics(m, X_train, X_test, y_train, y_test)
-        new_row= {'names': n, 'accuracy': ac, 'precision': pr, 'recall': re, 'f1': f1}
-        score=pd.concat([score, pd.DataFrame(new_row, index=[0])])
+        new_row = {'names': n, 'accuracy': ac, 'precision': pr, 'recall': re, 'f1': f1}
+        score = pd.concat([score, pd.DataFrame(new_row, index=[0])])
     return score
+
+
+def prepair_score(score):
+    score = pd.melt(score, id_vars=['model'], value_vars=['accuracy', 'precision', 'recall', 'f1'])
+    return score
+
+
+def create_visualization(s):
+    s = prepair_score(s)
+    sns.set(rc={'figure.figsize': (10, 5)})
+    sns.barplot(x='model', y='value', hue='variable', data=s)
+    plt.title('Model Performance')
+    plt.ylabel('Score in each metric')
+    plt.xlabel('Model')
+    plt.legend(title='Metrics')
+    plt.show()
