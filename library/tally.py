@@ -128,12 +128,8 @@ def validate(X_train, X_test, y_train, y_test, models, names):
     It returns a dataframe with these metrics for each model.
     """
     score = pd.DataFrame(columns=['model', 'accuracy', 'precision', 'recall', 'f1'])
-    if X_train['CAT_GAMBLING'].dtype == 'object':
-        X_train = map_gambling(X_train)
-    if X_test['CAT_GAMBLING'].dtype == 'object':
-        X_test = map_gambling(X_test)
-    X_train= remove_columns_with_high_correlation(X_train)
-    X_test = remove_columns_with_high_correlation(X_test)
+
+
     X_train, X_test = cox_box_transform(X_train, X_test)
     for m, n in zip(models, names):
         ac, pr, re, f1 = get_my_metrics(m, X_train, X_test, y_train, y_test)
@@ -160,5 +156,6 @@ def create_visualization(score):
     plt.title('Model Performance')
     plt.ylabel('Score in each metric')
     plt.xlabel('Model')
+    plt.xticks(rotation=45, ha='right')
     plt.legend(title='Metrics')
     plt.show()
