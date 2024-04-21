@@ -5,8 +5,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import PowerTransformer
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, roc_curve, auc
-# import StratifiedKFold
 from sklearn.model_selection import StratifiedKFold
+from pyod.models.knn import KNN
 
 
 def map_gambling(df):
@@ -25,6 +25,24 @@ def split_x_from_y(df, target='DEFAULT'):
     X = df.drop(columns=[target])
     y = df[target]
     return X, y
+
+
+def remove_columns_with_high_correlation(df):
+    columns_to_remove = ["T_CLOTHING_12", "T_ENTERTAINMENT_12", "T_GROCERIES_12", "T_GROCERIES_6", "T_HEALTH_12",
+                         "T_TAX_12", "T_TAX_6",
+                         "T_TRAVEL_12", "T_TRAVEL_6", "T_UTILITIES_12", "T_UTILITIES_6", "T_EXPENDITURE_12",
+                         "T_EXPENDITURE_6"]
+    df = df.drop(columns=columns_to_remove)
+    return df
+
+
+def automatic_remove_outliers(df):
+    clf = KNN(contamination=0.04)
+    clf.fit(df)
+    df['outliers'] = clf.labels_
+    df['outliers'] = df['outliers'].map({'No': 0, 'Yes': 1})
+    df = df[df['outliers'] == 0]
+    return df
 
 
 def get_my_metrics(model, X_train, X_val, y_train, y_val):
@@ -109,20 +127,22 @@ def validate(X_train, X_test, y_train, y_test, models, names):
     This function fits each model with the training data, makes predictions on the test data, and calculates the accuracy, precision, recall, and f1 score.
     It returns a dataframe with these metrics for each model.
     """
-    score = pd.DataFrame(columns=['names', 'accuracy', 'precision', 'recall', 'f1'])
+    score = pd.DataFrame(columns=['model', 'accuracy', 'precision', 'recall', 'f1'])
     if X_train['CAT_GAMBLING'].dtype == 'object':
         X_train = map_gambling(X_train)
     if X_test['CAT_GAMBLING'].dtype == 'object':
         X_test = map_gambling(X_test)
+    X_train= remove_columns_with_high_correlation(X_train)
+    X_test = remove_columns_with_high_correlation(X_test)
     X_train, X_test = cox_box_transform(X_train, X_test)
     for m, n in zip(models, names):
         ac, pr, re, f1 = get_my_metrics(m, X_train, X_test, y_train, y_test)
-        new_row = {'names': n, 'accuracy': ac, 'precision': pr, 'recall': re, 'f1': f1}
+        new_row = {'model': n, 'accuracy': ac, 'precision': pr, 'recall': re, 'f1': f1}
         score = pd.concat([score, pd.DataFrame(new_row, index=[0])])
     return score
 
 
-def prepair_score(score):
+def prepare_score(score):
     """
     This function reshapes the score dataframe from wide format to long format for visualization.
     """
@@ -134,7 +154,7 @@ def create_visualization(score):
     """
     This function creates a bar plot of the model performance metrics.
     """
-    s = prepair_score(score)
+    s = prepare_score(score)
     sns.set(rc={'figure.figsize': (10, 5)})
     sns.barplot(x='model', y='value', hue='variable', data=s)
     plt.title('Model Performance')
