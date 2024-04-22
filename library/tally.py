@@ -61,7 +61,7 @@ def get_my_metrics(model, X_train, X_val, y_train, y_val):
     return accuracy, precision, recall, f1
 
 
-def cox_box_transform(X_train, X_val):
+def cox_box_transform(X_train, X_val, scaler=StandardScaler()):
     """
     This function applies the Yeo-Johnson power transformation to the training and validation data.
     """
@@ -69,8 +69,8 @@ def cox_box_transform(X_train, X_val):
     X_train_transformed = cox_box_model.fit_transform(X_train)
     X_val_transformed = cox_box_model.transform(X_val)
 
-    # X_train_transformed = scaler.fit_transform(X_train_transformed)
-    # X_val_transformed = scaler.transform(X_val_transformed)
+    X_train_transformed = scaler.fit_transform(X_train_transformed)
+    X_val_transformed = scaler.transform(X_val_transformed)
 
     return X_train_transformed, X_val_transformed
 
