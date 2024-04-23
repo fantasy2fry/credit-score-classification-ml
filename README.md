@@ -39,8 +39,16 @@ Project is going to be done by a team of 3 people. Throughout the project we are
 - Project team is going to think of feedback from the validators and improve the final version of the feature engineering and first models.
 
 
-### Third part of the project - Model creation
-- to be added
+### Third part of the project - Final models and conclusions
+- Files from this part can be found in "final_models" folder.
+- We have done lots of things, I might describe them later.
+- In folder "library" we have our own library with functions that we have used in the project.
+
+### Final reports
+- Reports are written in Polish.
+- They can be found in "reports" folder.
+- We have report from our whole project and from each part of the project.
+- We have also report about our validator work for the other team.
 
 ### Note for every contributor:
 - All files names should contain underscore instead of spaces. It is a good practice, because it is better for UNIX or UNIX-like systems.
